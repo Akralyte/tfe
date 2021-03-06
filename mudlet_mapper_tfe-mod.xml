@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MudletPackage>
+<MudletPackage version="1.001">
+	<TriggerPackage>
+		<TriggerGroup isActive="yes" isFolder="yes" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+			<name>TheForestsEdge</name>
+			<script></script>
+			<triggerType>0</triggerType>
+			<conditonLineDelta>1</conditonLineDelta>
+			<mStayOpen>0</mStayOpen>
+			<mCommand></mCommand>
+			<packageName></packageName>
+			<mFgColor>#ff0000</mFgColor>
+			<mBgColor>#ffff00</mBgColor>
+			<mSoundFile></mSoundFile>
+			<colorTriggerFgColor>#000000</colorTriggerFgColor>
+			<colorTriggerBgColor>#000000</colorTriggerBgColor>
+			<regexCodeList />
+			<regexCodePropertyList />
+			<Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+				<name>Login</name>
+				<script>raiseEvent("mmp logged in", "The Forest's Edge")
+mmp.game = "The Forest's Edge"</script>
+				<triggerType>0</triggerType>
+				<conditonLineDelta>99</conditonLineDelta>
+				<mStayOpen>0</mStayOpen>
+				<mCommand></mCommand>
+				<packageName></packageName>
+				<mFgColor>#ff0000</mFgColor>
+				<mBgColor>#ffff00</mBgColor>
+				<mSoundFile></mSoundFile>
+				<colorTriggerFgColor>#000000</colorTriggerFgColor>
+				<colorTriggerBgColor>#000000</colorTriggerBgColor>
+				<regexCodeList>
+					<string>|                    Hello and welcome to The Forest's Edge!                  |</string>
+					<string>                                                 https://www.theforestsedge.com</string>
+				</regexCodeList>
+				<regexCodePropertyList>
+					<integer>3</integer>
+					<integer>3</integer>
+				</regexCodePropertyList>
+			</Trigger>
+			<TriggerGroup isActive="yes" isFolder="yes" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+				<name>Doors</name>
+				<script></script>
+				<triggerType>0</triggerType>
+				<conditonLineDelta>0</conditonLineDelta>
+				<mStayOpen>0</mStayOpen>
+				<mCommand></mCommand>
+				<packageName></packageName>
+				<mFgColor>#ff0000</mFgColor>
+				<mBgColor>#ffff00</mBgColor>
+				<mSoundFile></mSoundFile>
+				<colorTriggerFgColor>#000000</colorTriggerFgColor>
+				<colorTriggerBgColor>#000000</colorTriggerBgColor>
+				<regexCodeList />
+				<regexCodePropertyList />
+				<Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+					<name>Door in the way</name>
+					<script>mmp.openDoor()
+--slowwalk doesn't appear to continue walking after opening the door
+if mmp.settings.slowwalk then
+  mmp.move()
+end
+
+</script>
+					<triggerType>0</triggerType>
+					<conditonLineDelta>0</conditonLineDelta>
+					<mStayOpen>0</mStayOpen>
+					<mCommand></mCommand>
+					<packageName></packageName>
+					<mFgColor>#ff0000</mFgColor>
+					<mBgColor>#ffff00</mBgColor>
+					<mSoundFile></mSoundFile>
+					<colorTriggerFgColor>#000000</colorTriggerFgColor>
+					<colorTriggerBgColor>#000000</colorTriggerBgColor>
+					<regexCodeList>
+						<string>^The.* doors? to the \w+ (is|are) closed.$</string>
+					</regexCodeList>
+					<regexCodePropertyList>
+						<integer>1</integer>
+					</regexCodePropertyList>
+				</Trigger>
+			</TriggerGroup>
+		</TriggerGroup>
+	</TriggerPackage>
+	<TimerPackage />
+	<AliasPackage>
+		<AliasGroup isActive="yes" isFolder="yes">
+			<name>TheForestsEdge</name>
+			<script></script>
+			<command></command>
+			<packageName></packageName>
+			<regex></regex>
+			<Alias isActive="yes" isFolder="no">
+				<name>Add Special Open Command</name>
+				<script>-------------------------------------------------------------------------------------------------------
+-- usage: rhe [direction] [command]
+-- where [direction] is one of n s e w u d
+-- where [command] is what you would type to reveal/open the exit in [direction] from the current room
+-- Adds a command to open/reveal the exit in that direction from the current room
+-- note: these commands are only auto executed if you are mid speedwalk using the mapper. \
+--       (eg. goto ###, or double-clicking on a map location)
+--       these will not execute if manually walking or using your own speedwalk
+-------------------------------------------------------------------------------------------------------
+
+if not gmcp then
+  return
+end
+
+local dir = matches[2]
+local cmd = matches[3]
+local room = gmcp.Room.Info.num
+
+mmp.tfe.SetOpenCommand(room, dir, cmd)
+</script>
+				<command></command>
+				<packageName></packageName>
+				<regex>^(?:rhe|exit open) ([nsewud]) (.+)$</regex>
+			</Alias>
+			<Alias isActive="yes" isFolder="no">
+				<name>Remove Special Open Command</name>
+				<script>--
+-- usage: rhe clear [direction]
+-- where [direction] is one of n s e w u d
+-- Clears the command to open/reveal the exit in that direction from the current room
+--
+
+if not gmcp then
+  return
+end
+
+local dir = matches[2]
+local room = gmcp.Room.Info.num
+
+mmp.tfe.RemoveOpenCommand(room, dir)
+</script>
+				<command></command>
+				<packageName></packageName>
+				<regex>^(?:rhe|exit open) clear ([nsewud])$</regex>
+			</Alias>
+		</AliasGroup>
+	</AliasPackage>
+	<ActionPackage />
+	<ScriptPackage>
+		<ScriptGroup isActive="yes" isFolder="yes">
+			<name>The Forest's Edge</name>
+			<packageName></packageName>
+			<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+</script>
+			<eventHandlerList />
+			<Script isActive="yes" isFolder="no">
+				<name>mmp_tfe_convert</name>
+				<packageName></packageName>
+				<script>function mmp_tfe_convert()
+  --TFE uses vnum instead of num for room number and terrain instead of environment
+  if not mmp then return end
+  if mmp.game == "The Forest's Edge" then
+    gmcp.Room.Info.num = gmcp.Room.Info.vnum
+    gmcp.Room.Info.environment = gmcp.Room.Info.terrain
+  end
+end</script>
+				<eventHandlerList>
+					<string>gmcp.Room</string>
+				</eventHandlerList>
+			</Script>
+			<Script isActive="yes" isFolder="no">
+				<name>register_tfe_envdata</name>
+				<packageName></packageName>
+				<script>function register_tfe_envdata(_, game)
+  if game ~= "The Forest's Edge" then
+    return
+  end
+  mmp.envids =
+    {
+			["Town Street"] = 261,
+			Room = 271,
+			Field = 258,
+			Forest = 266,
+			Cave = 271, 
+			Desert = 267,
+			Swamp = 259,
+			["Bamboo Forest"] = 267, 
+			Tundra = 271,
+			Beach = 267,
+			Mountain = 269,
+			Hills = 261,
+			Water = 260,
+			Road = 271,
+			Shallows = 262,
+			["Dry Riverbed"] = 259,
+			["Forest Path"] = 258,
+			["Ocean Water"] = 260,
+			River = 270,
+      Bridge = 263,
+      Path = 263,
+      Trail = 271,
+      Underwater = 260,
+      
+			
+    }
+  mmp.waterenvs = {}
+  local waterids =
+    {""}
+  for i = 1, #waterids do
+    mmp.waterenvs[mmp.envids[waterids[i]]] = true
+  end
+  mmp.envidsr = {}
+  for name, id in pairs(mmp.envids) do
+    mmp.envidsr[id] = name
+  end
+end</script>
+				<eventHandlerList>
+					<string>mmp logged in</string>
+				</eventHandlerList>
+			</Script>
+			<Script isActive="yes" isFolder="no">
+				<name>mmp_tfe_center_roominfo</name>
+				<packageName></packageName>
+				<script>function mmp_tfe_center_roominfo()
+  -- tfe uses vnum instead of num. this is executing before i can get the alternatives
+  if mmp.game ~= "The Forest's Edge" then return end
+  if gmcp.Room.Info then centerview(gmcp.Room.Info.vnum) end
+end</script>
+				<eventHandlerList>
+					<string>gmcp.Room</string>
+				</eventHandlerList>
+			</Script>
+			<Script isActive="yes" isFolder="no">
+				<name>mmp_tfe_autoexits</name>
+				<packageName></packageName>
+				<script>mmp = mmp or {}
+mmp.tfe = mmp.tfe or {}
+mmp.tfe.lastRoomUpdate = mmp.tfe.lastRoomUpdate or os.time()
+
+function mmp_tfe_autoexits()
+  --if mmp.tfe.currentroom ~= gmcp.Room.Info.num then echo("\n[New Room Number: "..gmcp.Room.Info.num.."]\n") end
+  mmp.tfe.currentroom = mmp.tfe.currentroom or 0
+  mmp.tfe.currentexits = mmp.tfe.currentexits or ""
+  if mmp.paused or not mmp.autowalking then
+    return
+  end
+  local idle = os.time() - mmp.tfe.lastRoomUpdate
+  mmp.tfe.lastRoomUpdate = os.time()
+  --echo("\n[1 Current Exits: "..mmp.tfe.currentexits.."]\n")
+  local exits = mmp.tfe.MinifyExits()
+  if mmp.tfe.currentroom == gmcp.Room.Info.num then
+     -- false positives possible as no guarantee on order of ( for in pairs do )
+      --echo("\n["..exits.." | "..mmp.tfe.currentexits.."]\n")
+      if mmp.tfe.currentexits ~= exits then --same room, but exits changed, door opened, or secret entrance revealed, try to move.
+        --echo("\n[Exits Changed]\n")
+        mmp.tfe.currentexits = exits
+        --if it has been 2 seconds or more since we last moved, this should mean speedwalking was blocked by an exit opening. try to move again
+        if (idle &gt;= 2) then
+          mmp.move() 
+        end
+        --echo("\n[2 Current Exits: "..mmp.tfe.currentexits.."]\n")
+      end
+    return
+  else
+    mmp.tfe.currentexits = exits
+  end
+  mmp.tfe.currentroom = gmcp.Room.Info.num
+-- default to 1 if it's 0 for some reason
+  if speedWalkCounter == 0 then
+    speedWalkCounter = 1
+  end
+  
+  local index = table.index_of(mmp.speedWalkPath,gmcp.Room.Info.num)
+  local cmd = mmp.speedWalkDir[index]
+  local exit = mmp.tfe.directions[cmd]
+  --echo("\n[" .. gmcp.Room.Info.num .. ":" ..cmd .. ":" .. exit .. "]\n")
+  if exit ~= nil then
+    --echo(gmcp.Room.Info.exit_info[exit].flags)
+    if gmcp.Room.Info.exits[exit] == nil or table.contains(gmcp.Room.Info.exit_info[exit].flags,"closed") then
+      --send("open " .. exit)
+      mmp.tfe.OpenExit(mmp.tfe.currentroom,cmd)
+    end
+  end
+end
+
+function mmp.tfe.SetOpenCommand(room, dir, command)
+  assert(tonumber(room),"expecting room number")
+  assert(mmp.tfe.directions[dir] ~= nil,"dir must be one of n s e w u d")
+  setRoomUserData(room,"open_"..dir,command)
+end
+
+function mmp.tfe.RemoveOpenCommand(room, dir)
+  assert(tonumber(room),"expecting room number")
+  assert(mmp.tfe.directions[dir] ~= nil,"dir must be one of n s e w u d")
+  clearRoomUserDataItem(room, "open_"..dir)
+end
+
+function mmp.tfe.OpenExit(room, dir)
+  assert(tonumber(room),"room must be a number")
+  assert(mmp.tfe.directions[dir] ~= nil,"dir must be one of n s e w u d")
+  local cmd
+  if gmcp.Room.Info.exits[mmp.tfe.directions[dir]] == nil then
+    --this is a hidden exit that needs to be revealed with an action
+    cmd = getRoomUserData(room,"open_"..dir) or ''
+    if cmd ~= '' then
+      send(cmd)
+    end
+    --exit is hidden, but no command saved to open it
+    return 
+  end
+  --look for a special open command (like pull lever, or knock gate
+  cmd = getRoomUserData(room,"open_"..dir) or ''
+  if cmd ~= '' then
+      send(cmd)
+  else
+  --no special command found, just try to 'open' that direction
+  send("open " .. dir)
+  end
+end
+
+
+function mmp.tfe.MinifyExits()
+  if not gmcp then return end
+  local exits = ""
+  for key, exit in pairs(mmp.tfe.directions) do
+    if gmcp.Room.Info.exit_info[exit] then
+      if table.contains(gmcp.Room.Info.exit_info[exit].flags,"closed") then
+        exits = exits .. key
+      else
+        exits = exits .. string.upper(key)
+      end
+    end
+  end
+  return exits
+end
+
+
+mmp.tfe.directions = mmp.tfe.directions or {}
+mmp.tfe.directions["n"] = "north"
+mmp.tfe.directions["s"] = "south"
+mmp.tfe.directions["e"] = "east"
+mmp.tfe.directions["w"] = "west"
+mmp.tfe.directions["u"] = "up"
+mmp.tfe.directions["d"] = "down" 
+
+mmp.tfe.help = "use 'rhe [direction] [command]' to add a command to reveal or open the exit in the specified direction in the current room. For Example: 'rhe w pul lev' will send 'pul lev' before speedwalking through the west exit if it is closed. 'rhe clear [direction] removes the stored command. note: directino should be 'n s e w u d'"
+
+</script>
+				<eventHandlerList>
+					<string>gmcp.Room</string>
+				</eventHandlerList>
+			</Script>
+		</ScriptGroup>
+	</ScriptPackage>
+	<KeyPackage />
+	<HelpPackage>
+		<helpURL></helpURL>
+	</HelpPackage>
+</MudletPackage>
