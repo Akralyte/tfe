@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MudletPackage>
+<MudletPackage version="1.001">
+	<TriggerPackage />
+	<TimerPackage />
+	<AliasPackage>
+		<AliasGroup isActive="yes" isFolder="yes">
+			<name>Gauges</name>
+			<script></script>
+			<command></command>
+			<packageName></packageName>
+			<regex></regex>
+			<Alias isActive="yes" isFolder="no">
+				<name>Hide Gauges</name>
+				<script>tfe.ui.gauges.display = false
+setBorderBottom(0)</script>
+				<command></command>
+				<packageName></packageName>
+				<regex>^ui gauges off$</regex>
+			</Alias>
+			<Alias isActive="yes" isFolder="no">
+				<name>Show Gauges</name>
+				<script>tfe.ui.gauges.display = true
+setBorderBottom(tfe.ui.gauges.height)</script>
+				<command></command>
+				<packageName></packageName>
+				<regex>^ui gauges on$</regex>
+			</Alias>
+		</AliasGroup>
+		<AliasGroup isActive="yes" isFolder="yes">
+			<name>Group</name>
+			<script></script>
+			<command></command>
+			<packageName></packageName>
+			<regex></regex>
+			<Alias isActive="yes" isFolder="no">
+				<name>show/hide Group Panel</name>
+				<script>local status = string.lower(matches[2])
+if status == "off" then
+  if tfe.ui.settings.group.enabled then
+    tfe.ui.settings.group.enabled = false
+    tfe.ui.group.panel:hide()
+    setBorderRight(0)
+  end
+elseif status == "on" then
+    if not tfe.ui.settings.group.enabled then
+    tfe.ui.settings.group.enabled = true
+    tfe.ui.group.panel:show()
+    tfe.ui.group.update()
+  end
+end</script>
+				<command></command>
+				<packageName></packageName>
+				<regex>^ui group ([onf]+)$</regex>
+			</Alias>
+		</AliasGroup>
+	</AliasPackage>
+	<ActionPackage />
+	<ScriptPackage>
+		<ScriptGroup isActive="yes" isFolder="yes">
+			<name>Gauges</name>
+			<packageName></packageName>
+			<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+tfe = tfe or {}
+tfe.ui = tfe.ui or {}
+tfe.ui.gauges = tfe.ui.gauges or {}
+tfe.ui.gauges.height = tfe.ui.gauges.height or 20
+tfe.ui.gauges.display = tfe.ui.gauges.display or true
+tfe.ui.gauges.update = tfe.ui.gauges.update or {}
+--bottom border should be atleast 30px for gauges
+if getBorderBottom() &lt; tfe.ui.gauges.height then
+  setBorderBottom(tfe.ui.gauges.height)
+end
+
+
+tfe.ui.settings = tfe.ui.settings or {}
+tfe.ui.settings.gauges = tfe.ui.settings.gauges or {}
+tfe.ui.settings.gauges.vitals = {
+  hp = {index = 0, frontColor = "#770000", backColor = "#440000"},
+  en = {index = 1, frontColor = "#0000CC", backColor = "#000055"},
+  mv = {index = 2, frontColor = "#444444", backColor = "#222222"},
+  
+}
+tfe.ui.settings.gauges.score = {
+  xp = {index = 3, frontColor = "#004444", backColor = "#002222"},
+  
+}
+--initialise
+--tfe.ui.resize()
+gmcp = gmcp or {}
+gmcp.Char = gmcp.Char or {}
+gmcp.Char.Status = gmcp.Char.Status or {}
+gmcp.Char.Vitals = gmcp.Char.Vitals or {}</script>
+			<eventHandlerList />
+			<Script isActive="yes" isFolder="no">
+				<name>tfe.ui.gauges.vitals</name>
+				<packageName></packageName>
+				<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+function tfe.ui.gauges.create(name, index, fc, bc)
+  local windowSize = getMainWindowSize() - getBorderLeft() - getBorderRight()
+  local gaugeSize = windowSize/4
+  
+  if tfe.ui.gauges[name] then
+    --modify existing gauge
+    tfe.ui.gauges[name]:set_constraints({
+      x=gaugeSize*index,
+      y=-1*tfe.ui.gauges.height,
+      height=tostring(tfe.ui.gauges.height).."px",
+      width=gaugeSize
+    })
+  else
+    --create gauge
+    tfe.ui.gauges[name] = Geyser.Gauge:new({
+      name="tfe.ui.gauges."..name,
+      x=gaugeSize*index, y=-1*tfe.ui.gauges.height,
+      width=gaugeSize, height=tostring(tfe.ui.gauges.height).."px",
+    })
+    --and move it into position, creating it with a negative Y doesn't seem to work
+    tfe.ui.gauges[name]:move(gaugeSize*index,-30)
+    tfe.ui.gauges[name].front:setColor(fc)
+    tfe.ui.gauges[name].back:setColor(bc)
+  end
+  if tfe.ui.gauges.display == false then
+    tfe.ui.gauges[name]:hide()
+  else
+    tfe.ui.gauges[name]:show()
+  end
+end
+
+function tfe.ui.gauges.setValue(name, current, maximum, display)
+  if name == 'hp' then
+    display = display .. ' '
+    if table.contains(gmcp.Char.Status.conditions, 'poisoned') then
+      display = display .. "[POI]"
+    end
+  end
+  tfe.ui.gauges[name]:setValue(current,maximum,display)
+end
+
+function tfe.ui.gauges.update.vital(name)
+  local maxname = "max"..name
+  local cur = gmcp.Char.Vitals[name] or 85
+  local max = gmcp.Char.Vitals[maxname] or 100
+  tfe.ui.gauges.setValue(name,cur,max,string.upper(name)..": ".. cur .. " / " .. max)
+end
+
+
+function tfe.ui.gauges.vitals()
+  for stat, vals in pairs(tfe.ui.settings.gauges.vitals) do
+    if tfe.ui.gauges[stat] == nil then
+      tfe.ui.gauges.create(stat, vals.index,vals.frontColor, vals.backColor)
+    end
+    tfe.ui.gauges.update.vital(stat)
+  end
+end
+</script>
+				<eventHandlerList>
+					<string>gmcp.Char.Vitals</string>
+					<string>gmcp.Char.Status</string>
+				</eventHandlerList>
+			</Script>
+			<Script isActive="yes" isFolder="no">
+				<name>tfe.ui.gauges.score</name>
+				<packageName></packageName>
+				<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+
+function tfe.ui.gauges.update.xp()
+  --creates the gmcp table structure if is does not exist to stop local variable creation crashing
+  gmcp = gmcp or {}
+  gmcp.Char = gmcp.Char or {}
+  gmcp.Char.Score = gmcp.Char.Score or {}
+  
+  local cur = gmcp.Char.Score.xp or 900
+  local max = gmcp.Char.Score.xp_level or 1000
+  local need = gmcp.Char.Score.xp_needed or 100
+  local level = gmcp.Char.Score.level or 1
+  tfe.ui.gauges.setValue("xp", cur,max,"(".. level ..") " .. need .. " XP")
+end
+
+
+function tfe.ui.gauges.score()
+  for stat, vals in pairs(tfe.ui.settings.gauges.score) do
+    if tfe.ui.gauges[stat] == nil then
+      tfe.ui.gauges.create(stat, vals.index,vals.frontColor, vals.backColor)
+    end
+    tfe.ui.gauges.update[stat]()
+  end
+end
+</script>
+				<eventHandlerList>
+					<string>gmcp.Char.Score</string>
+				</eventHandlerList>
+			</Script>
+			<Script isActive="yes" isFolder="no">
+				<name>tfe.ui.resize</name>
+				<packageName></packageName>
+				<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+
+function tfe.ui.resize()
+  for stat, vals in pairs(tfe.ui.settings.gauges.vitals) do
+      tfe.ui.gauges.create(stat, vals.index,vals.frontColor, vals.backColor)
+      tfe.ui.gauges.update.vital(stat)
+  end
+  
+  for stat, vals in pairs(tfe.ui.settings.gauges.score) do
+    tfe.ui.gauges.create(stat, vals.index,vals.frontColor, vals.backColor)
+  end
+  
+  --at this point in time, it doesn't make sense to do this in the loop since there is only XP 
+  tfe.ui.gauges.update.xp()
+
+end</script>
+				<eventHandlerList>
+					<string>sysWindowResizeEvent</string>
+					<string>sysLoadEvent</string>
+				</eventHandlerList>
+			</Script>
+		</ScriptGroup>
+		<ScriptGroup isActive="yes" isFolder="yes">
+			<name>Group</name>
+			<packageName></packageName>
+			<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+tfe = tfe or {}
+tfe.ui = tfe.ui or {}
+tfe.ui.group = tfe.ui.group or {}
+tfe.ui.group.windows = tfe.ui.group.windows or {}
+
+
+tfe.ui.settings = tfe.ui.settings or {}
+tfe.ui.settings.group = tfe.ui.settings.group or {}
+tfe.ui.settings.group.enabled = tfe.ui.settings.group.enabled or true
+tfe.ui.settings.group.maxdisplay = tfe.ui.settings.group.maxdisplay or 15
+tfe.ui.settings.group.width = tfe.ui.settings.group.width or 150
+tfe.ui.settings.group.height = tfe.ui.settings.group.height or 15
+
+tfe.ui.settings.group.vitals = {
+  hp = {index = 1, frontColor = "#770000", backColor = "#440000"},
+  en = {index = 2, frontColor = "#0000CC", backColor = "#000055"},
+  mv = {index = 3, frontColor = "#444444", backColor = "#222222"},
+  
+}</script>
+			<eventHandlerList />
+			<Script isActive="yes" isFolder="no">
+				<name>tfe.ui.group functions</name>
+				<packageName></packageName>
+				<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+
+function tfe.ui.group.hasMembers()
+  if not gmcp or not gmcp.Group then return false end
+  if table.size(gmcp.Group.members) ~= 0 then
+    return true
+  end
+  return false
+end
+
+--tfe.ui.settings.group.maxdisplay
+--tfe.ui.group.windows
+--tfe.ui.settings.group.width
+
+function tfe.ui.group.makePanel()
+  local yoffset = 0
+  local padding = 10
+  if not tfe.ui.group.panel then
+--echo("\ncreate panel")
+    tfe.ui.group.panel = Geyser.Container:new({
+      name = "tfe.ui.group.panel",
+      x = tfe.ui.settings.group.width*-1,
+      y = getBorderTop(),
+      width = tfe.ui.settings.group.width,
+      height = "100%"
+    })
+  end
+  for i = 1,tfe.ui.settings.group.maxdisplay,1
+  do
+    if tfe.ui.group.windows[tostring(i)] == nil then
+      --create a group member window for each of the diplayable members, default max is 5 members
+  --echo("\ncreate window "..tostring(i))
+      tfe.ui.group.windows[tostring(i)] = Geyser.Container:new({
+        name = "tfe.ui.group.member."..i,
+        x = 0, y =(yoffset*tfe.ui.settings.group.height*4)+(yoffset*padding),
+        width = tfe.ui.settings.group.width, 
+        height = tfe.ui.settings.group.height*4
+      },tfe.ui.group.panel)
+      --4 sections to display for members, name, hp, en, mv
+      --create name label
+  --echo("\ncreate label: name, in window "..tostring(i))
+      tfe.ui.group.windows[tostring(i)..".name"] = Geyser.Label:new({
+        name = "tfe.ui.group.member."..i..".name",
+        x = 0, y = 0,
+        width = tfe.ui.settings.group.width, 
+        height = tfe.ui.settings.group.height
+      },tfe.ui.group.windows[tostring(i)])
+      for stat, vals in pairs(tfe.ui.settings.group.vitals) do
+        --create hp, en, and mv panel
+  --echo("\ncreate guage: " .. stat .. ", in window "..tostring(i))
+        tfe.ui.group.windows[tostring(i).."."..stat] = Geyser.Gauge:new({
+          name = "tfe.ui.group.member."..i.."."..stat,
+          x = 0, y = tfe.ui.settings.group.height*vals.index,
+          width = tfe.ui.settings.group.width, 
+          height = tfe.ui.settings.group.height
+        },tfe.ui.group.windows[tostring(i)])
+        --set color
+        tfe.ui.group.windows[tostring(i).."."..stat].front:setColor(vals.frontColor)
+        tfe.ui.group.windows[tostring(i).."."..stat].back:setColor(vals.backColor)
+      end
+    end
+    yoffset = yoffset + 1
+  end
+  setBorderRight(0)
+  tfe.ui.group.panel:hide()
+
+end
+
+</script>
+				<eventHandlerList />
+			</Script>
+			<Script isActive="yes" isFolder="no">
+				<name>tfe.ui.group.update</name>
+				<packageName></packageName>
+				<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+
+function tfe.ui.group.update()
+  if not tfe or not tfe.ui or not tfe.ui.group or not tfe.ui.group.panel or not tfe.ui.settings.group.enabled then return end
+  gmcp = gmcp or {}
+  gmcp.Group = gmcp.Group or {}
+  if table.size(gmcp.Group.members) == 0 then
+    tfe.ui.group.panel:hide()
+    setBorderRight(0)
+    return
+  end
+  if tfe.ui.group.panel.hidden then tfe.ui.group.panel:show() end
+  if getBorderRight() ~= tfe.ui.settings.group.width then setBorderRight(tfe.ui.settings.group.width) end
+  local i = 1
+  for name, stats in pairs(gmcp.Group.members) do
+    if i &lt;= tfe.ui.settings.group.maxdisplay then
+    local format = "c"
+    if name == gmcp.Group.leader then format = "cb" end
+      tfe.ui.group.windows[tostring(i)]:show()
+      tfe.ui.group.windows[tostring(i)..".name"]:echo(name,nil,format)
+      tfe.ui.group.windows[tostring(i)..".hp"]:setValue(stats.hp,stats.maxhp,"HP: ".. stats.hp .. " / " .. stats.maxhp)
+      tfe.ui.group.windows[tostring(i)..".en"]:setValue(stats.en,stats.maxen,"EN: ".. stats.en .. " / " .. stats.maxen)
+      tfe.ui.group.windows[tostring(i)..".mv"]:setValue(stats.mv,stats.maxmv,"MV: ".. stats.mv .. " / " .. stats.maxmv)
+    end
+    i = i + 1
+  end
+  --if less than displayble memebers remaining group memeber windows to be hidden
+  for j = i,tfe.ui.settings.group.maxdisplay,1 do
+    tfe.ui.group.windows[tostring(j)]:hide()
+  end
+  
+end
+</script>
+				<eventHandlerList>
+					<string>gmcp.Group</string>
+				</eventHandlerList>
+			</Script>
+			<Script isActive="yes" isFolder="no">
+				<name>tfe.ui.group.startup</name>
+				<packageName></packageName>
+				<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+
+function tfe.ui.group.startup()
+  tfe.ui.group.makePanel()
+end
+</script>
+				<eventHandlerList>
+					<string>sysLoadEvent</string>
+				</eventHandlerList>
+			</Script>
+			<Script isActive="yes" isFolder="no">
+				<name>tfe.ui.group.manualresize</name>
+				<packageName></packageName>
+				<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+function tfe.ui.group.manualresize()
+  for i = 1,tfe.ui.settings.group.maxdisplay,1 do
+    tfe.ui.group.windows[tostring(i)..".name"]:resize(nil,tfe.ui.settings.group.height)
+    tfe.ui.group.windows[tostring(i)..".hp"]:resize(nil,tfe.ui.settings.group.height)
+    tfe.ui.group.windows[tostring(i)..".en"]:resize(nil,tfe.ui.settings.group.height)
+    tfe.ui.group.windows[tostring(i)..".mv"]:resize(nil,tfe.ui.settings.group.height)
+    
+    tfe.ui.group.windows[tostring(i)..".name"]:move(nil,tfe.ui.settings.group.height*0)
+    tfe.ui.group.windows[tostring(i)..".hp"]:move(nil,tfe.ui.settings.group.height*1)
+    tfe.ui.group.windows[tostring(i)..".en"]:move(nil,tfe.ui.settings.group.height*2)
+    tfe.ui.group.windows[tostring(i)..".mv"]:move(nil,tfe.ui.settings.group.height*3)
+    
+    
+    
+    tfe.ui.group.windows[tostring(i)]:move(nil,(i-1)*tfe.ui.settings.group.height*5)
+  end
+end</script>
+				<eventHandlerList />
+			</Script>
+			<Script isActive="yes" isFolder="no">
+				<name>tfe.ui.group.forceresize</name>
+				<packageName></packageName>
+				<script>function tfe.ui.group.forceresize(width, height, padding)
+  tfe.ui.settings.group.width = width
+  tfe.ui.settings.group.height = height
+  tfe.ui.group.panel:move(-1*width,nil)
+  for i = 1,tfe.ui.settings.group.maxdisplay,1 do
+    tfe.ui.group.windows[tostring(i)..".name"]:resize(width,tfe.ui.settings.group.height)
+    tfe.ui.group.windows[tostring(i)..".hp"]:resize(width,tfe.ui.settings.group.height)
+    tfe.ui.group.windows[tostring(i)..".en"]:resize(width,tfe.ui.settings.group.height)
+    tfe.ui.group.windows[tostring(i)..".mv"]:resize(width,tfe.ui.settings.group.height)
+    
+    local pos = width * -1
+    tfe.ui.group.windows[tostring(i)..".name"]:move(nil,tfe.ui.settings.group.height*0)
+    tfe.ui.group.windows[tostring(i)..".hp"]:move(nil,tfe.ui.settings.group.height*1)
+    tfe.ui.group.windows[tostring(i)..".en"]:move(nil,tfe.ui.settings.group.height*2)
+    tfe.ui.group.windows[tostring(i)..".mv"]:move(nil,tfe.ui.settings.group.height*3)
+    
+    
+    
+    tfe.ui.group.windows[tostring(i)]:move(nil,(i-1)*tfe.ui.settings.group.height*4 + padding*(i-1))
+  end
+end</script>
+				<eventHandlerList />
+			</Script>
+		</ScriptGroup>
+		<Script isActive="no" isFolder="no">
+			<name>manual add group member window</name>
+			<packageName></packageName>
+			<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+--[[
+yoffset = 7
+padding = 15
+i = 8
+--create a group member window for each of the diplayable members, default max is 5 members
+--echo("\ncreate window "..tostring(i))
+      tfe.ui.group.windows[tostring(i)] = Geyser.Container:new({
+        name = "tfe.ui.group.member."..i,
+        x = 0, y =(yoffset*tfe.ui.settings.group.height*4)+(yoffset*padding),
+        width = tfe.ui.settings.group.width, 
+        height = tfe.ui.settings.group.height*4
+      },tfe.ui.group.panel)
+      --4 sections to display for members, name, hp, en, mv
+      --create name label
+--echo("\ncreate label: name, in window "..tostring(i))
+      tfe.ui.group.windows[tostring(i)..".name"] = Geyser.Label:new({
+        name = "tfe.ui.group.member."..i..".name",
+        x = 0, y = 0,
+        width = tfe.ui.settings.group.width, 
+        height = tfe.ui.settings.group.height
+      },tfe.ui.group.windows[tostring(i)])
+      for stat, vals in pairs(tfe.ui.settings.group.vitals) do
+        --create hp, en, and mv panel
+--echo("\ncreate guage: " .. stat .. ", in window "..tostring(i))
+        tfe.ui.group.windows[tostring(i).."."..stat] = Geyser.Gauge:new({
+          name = "tfe.ui.group.member."..i.."."..stat,
+          x = 0, y = tfe.ui.settings.group.height*vals.index,
+          width = tfe.ui.settings.group.width, 
+          height = tfe.ui.settings.group.height
+        },tfe.ui.group.windows[tostring(i)])
+        --set color
+        tfe.ui.group.windows[tostring(i).."."..stat].front:setColor(vals.frontColor)
+        tfe.ui.group.windows[tostring(i).."."..stat].back:setColor(vals.backColor)
+      end
+ --]]</script>
+			<eventHandlerList />
+		</Script>
+	</ScriptPackage>
+	<KeyPackage />
+	<HelpPackage>
+		<helpURL></helpURL>
+	</HelpPackage>
+</MudletPackage>
