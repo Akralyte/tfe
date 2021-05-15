@@ -65,7 +65,7 @@ end</script>
 --                                             --
 -- Note that you can also use external scripts --
 -------------------------------------------------
--- Pato Test
+-- Pato Test 2
 tfe = tfe or {}
 tfe.ui = tfe.ui or {}
 tfe.ui.gauges = tfe.ui.gauges or {}
