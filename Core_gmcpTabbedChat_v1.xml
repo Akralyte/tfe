@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MudletPackage>
+<MudletPackage version="1.001">
+	<TriggerPackage />
+	<TimerPackage />
+	<AliasPackage />
+	<ActionPackage />
+	<ScriptPackage>
+		<ScriptGroup isActive="yes" isFolder="yes">
+			<name>TabbedChat - TFE GMCP</name>
+			<packageName></packageName>
+			<script></script>
+			<eventHandlerList />
+			<Script isActive="yes" isFolder="no">
+				<name>gmcpChat.Startup</name>
+				<packageName></packageName>
+				<script>gmcpChat = gmcpChat or {}
+gmcpChat.Defaults = {}
+gmcpChat.Defaults["FontSize"] = 8
+gmcpChat.Defaults["Xpos"] = 0
+gmcpChat.Defaults["Ypos"] = 0
+gmcpChat.Defaults["Height"] = 125
+gmcpChat.Defaults["Width"] = 930 --this will adjust to main window width
+gmcpChat.Defaults["TabRatio"] = 1/12 --there are 12 channels
+gmcpChat.Defaults["TabHeight"] = 25
+gmcpChat.Defaults["TabWidth"] = gmcpChat.Defaults["Width"] * gmcpChat.Defaults["TabRatio"]
+gmcpChat.Defaults["WrapAt"] = 80
+gmcpChat.Defaults["NotifyRed"] = 60
+gmcpChat.Defaults["NotifyGreen"] = 10
+gmcpChat.Defaults["NotifyBlue"] = 10
+gmcpChat.Defaults["NotifyOpacity"] = 255
+
+gmcpChat.Channels = {"OOC","Gossip","Tell","Gtell","Gstatus","Ctell","Cstatus","Newbie","ATALK","Yell","Shout","Chat"}
+
+gmcpChat.Current = gmcpChat.Current or gmcpChat.Channels[1]
+
+
+function gmcpChat.chatTabResize()
+  for i = 1, 12 do
+    local window = gmcpChat.Channels[i].."Tab"
+    moveWindow(window,gmcpChat.Defaults["Xpos"] + (gmcpChat.Defaults["TabWidth"] * (i-1)), gmcpChat.Defaults["Ypos"])
+    resizeWindow(window,gmcpChat.Defaults["TabWidth"] , gmcpChat.Defaults["TabHeight"])
+  end
+end
+
+function gmcpChat.HideTab(channel)
+	hideWindow(channel.."Window")
+end
+
+function gmcpChat.ShowTab(channel)
+	showWindow(channel.."Window")
+end
+
+function gmcpChat.SwapTab(channel)
+	gmcpChat.HideTab(gmcpChat.Current)
+	setBackgroundColor(gmcpChat.Current.."Tab", 25,25,25, 0)
+	gmcpChat.ShowTab(channel)
+	setBackgroundColor(channel.."Tab", 25,25,25, 255)
+	gmcpChat.Current = channel
+end
+
+function gmcpChat.NewText(channel)
+	if gmcpChat.Current ~= channel then
+		setBackgroundColor(channel.."Tab", gmcpChat.Defaults["NotifyRed"], gmcpChat.Defaults["NotifyGreen"], gmcpChat.Defaults["NotifyBlue"], gmcpChat.Defaults["NotifyOpacity"])
+	end
+end
+
+function gmcpChat.Startup()
+	for i = 1 , 12 do
+		--Tab
+    createLabel( gmcpChat.Channels[i].."Tab", gmcpChat.Defaults["Xpos"] + (gmcpChat.Defaults["TabWidth"] * (i-1)), gmcpChat.Defaults["Ypos"], gmcpChat.Defaults["TabWidth"], gmcpChat.Defaults["TabHeight"], 1)
+		setLabelClickCallback(gmcpChat.Channels[i].."Tab", "gmcpChat.SwapTab", gmcpChat.Channels[i])
+		setTextFormat(gmcpChat.Channels[i].."Tab", 25,25,25, 255,255,255, 0,0,0 )
+		echo(gmcpChat.Channels[i].."Tab", "&lt;center&gt;&lt;font color=\"white\"&gt;" .. gmcpChat.Channels[i] .. " &lt;/font&gt;&lt;/center&gt;")
+    --Window
+		createMiniConsole(gmcpChat.Channels[i].."Window", gmcpChat.Defaults["Xpos"], gmcpChat.Defaults["Ypos"] + gmcpChat.Defaults["TabHeight"], gmcpChat.Defaults["Width"], gmcpChat.Defaults["Height"])
+		setWindowWrap(gmcpChat.Channels[i].."Window", gmcpChat.Defaults["WrapAt"])
+		setMiniConsoleFontSize(gmcpChat.Channels[i].."Window", gmcpChat.Defaults["FontSize"]);
+		setBackgroundColor(gmcpChat.Channels[i].."Window", 0,0,15, 0)
+		gmcpChat.HideTab(gmcpChat.Channels[i])
+	end
+	setBorderTop(gmcpChat.Defaults["TabHeight"] + gmcpChat.Defaults["Height"])
+	gmcpChat.chatTabResize()
+  gmcpChat.SwapTab(gmcpChat.Channels[1])
+end
+</script>
+				<eventHandlerList>
+					<string>sysLoadEvent</string>
+				</eventHandlerList>
+			</Script>
+			<Script isActive="yes" isFolder="no">
+				<name>gmcpChat.Capture</name>
+				<packageName></packageName>
+				<script>
+function gmcpChat.Capture(event)
+  local notify = true
+  local chan = string.split(event,"[.]")[3]
+  if gmcp.Channels[chan] == nil then return end -- no settings for channel
+  local name = gmcp.Channels[chan].who
+  local message = gmcp.Channels[chan].message
+  local lang = gmcp.Channels[chan].language
+  local ts = string.split(gmcp.Channels[chan].when," ")[4] --removed the date, and kept the time
+  if gmcp.Channels[chan].direction == "sent" then name = "To "..name end
+  cecho(chan.."Window",ts.." | "..name..": "..message.."\n")
+  gmcpChat.NewText(chan) -- this is to make chattab button(s) light up
+end
+</script>
+				<eventHandlerList>
+					<string>gmcp.Channels.Gtell</string>
+					<string>gmcp.Channels.Ctell</string>
+					<string>gmcp.Channels.Tell</string>
+					<string>gmcp.Channels.Gossip</string>
+					<string>gmcp.Channels.OOC</string>
+					<string>gmcp.Channels.Atalk</string>
+					<string>gmcp.Channels.Newbie</string>
+					<string>gmcp.Channels.Gstatus</string>
+					<string>gmcp.Channels.Cstatus</string>
+					<string>gmcp.Channels.Yell</string>
+					<string>gmcp.Channels.Shout</string>
+					<string>gmcp.Channels.Chat</string>
+				</eventHandlerList>
+			</Script>
+			<Script isActive="yes" isFolder="no">
+				<name>gmcpChat.chatTabResize</name>
+				<packageName></packageName>
+				<script>
+function gmcpChat.chatTabResize()
+  local w, h = getMainWindowSize()
+  gmcpChat.Defaults["TabWidth"] = w * gmcpChat.Defaults["TabRatio"]
+  for i = 1, 12 do
+    local tab = gmcpChat.Channels[i].."Tab"
+    moveWindow(tab,gmcpChat.Defaults["Xpos"] + (gmcpChat.Defaults["TabWidth"] * (i-1)), gmcpChat.Defaults["Ypos"])
+    resizeWindow(tab,gmcpChat.Defaults["TabWidth"] , gmcpChat.Defaults["TabHeight"])
+    
+  end
+end</script>
+				<eventHandlerList>
+					<string>sysWindowResizeEvent</string>
+				</eventHandlerList>
+			</Script>
+		</ScriptGroup>
+	</ScriptPackage>
+	<KeyPackage />
+	<HelpPackage>
+		<helpURL></helpURL>
+	</HelpPackage>
+</MudletPackage>

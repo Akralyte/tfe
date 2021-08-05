@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MudletPackage>
+<MudletPackage version="1.001">
+	<TriggerPackage>
+		<TriggerGroup isActive="yes" isFolder="yes" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+			<name>Module Subfolder 1</name>
+			<script></script>
+			<triggerType>0</triggerType>
+			<conditonLineDelta>0</conditonLineDelta>
+			<mStayOpen>0</mStayOpen>
+			<mCommand></mCommand>
+			<packageName></packageName>
+			<mFgColor>#ff0000</mFgColor>
+			<mBgColor>#ffff00</mBgColor>
+			<mSoundFile></mSoundFile>
+			<colorTriggerFgColor>#000000</colorTriggerFgColor>
+			<colorTriggerBgColor>#000000</colorTriggerBgColor>
+			<regexCodeList />
+			<regexCodePropertyList />
+			<Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+				<name>Module Trigger 1</name>
+				<script>echo("Module Test Trigger 1")</script>
+				<triggerType>0</triggerType>
+				<conditonLineDelta>0</conditonLineDelta>
+				<mStayOpen>0</mStayOpen>
+				<mCommand></mCommand>
+				<packageName></packageName>
+				<mFgColor>#ff0000</mFgColor>
+				<mBgColor>#ffff00</mBgColor>
+				<mSoundFile></mSoundFile>
+				<colorTriggerFgColor>#000000</colorTriggerFgColor>
+				<colorTriggerBgColor>#000000</colorTriggerBgColor>
+				<regexCodeList>
+					<string>Module Test</string>
+				</regexCodeList>
+				<regexCodePropertyList>
+					<integer>3</integer>
+				</regexCodePropertyList>
+			</Trigger>
+		</TriggerGroup>
+		<TriggerGroup isActive="yes" isFolder="yes" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+			<name>Module Subfolder 2</name>
+			<script></script>
+			<triggerType>0</triggerType>
+			<conditonLineDelta>0</conditonLineDelta>
+			<mStayOpen>0</mStayOpen>
+			<mCommand></mCommand>
+			<packageName></packageName>
+			<mFgColor>#ff0000</mFgColor>
+			<mBgColor>#ffff00</mBgColor>
+			<mSoundFile></mSoundFile>
+			<colorTriggerFgColor>#000000</colorTriggerFgColor>
+			<colorTriggerBgColor>#000000</colorTriggerBgColor>
+			<regexCodeList />
+			<regexCodePropertyList />
+			<Trigger isActive="yes" isFolder="no" isTempTrigger="no" isMultiline="no" isPerlSlashGOption="no" isColorizerTrigger="no" isFilterTrigger="no" isSoundTrigger="no" isColorTrigger="no" isColorTriggerFg="no" isColorTriggerBg="no">
+				<name>Module Trigger 2</name>
+				<script>echo("Module Test Trigger 2")</script>
+				<triggerType>0</triggerType>
+				<conditonLineDelta>0</conditonLineDelta>
+				<mStayOpen>0</mStayOpen>
+				<mCommand></mCommand>
+				<packageName></packageName>
+				<mFgColor>#ff0000</mFgColor>
+				<mBgColor>#ffff00</mBgColor>
+				<mSoundFile></mSoundFile>
+				<colorTriggerFgColor>#000000</colorTriggerFgColor>
+				<colorTriggerBgColor>#000000</colorTriggerBgColor>
+				<regexCodeList>
+					<string>Module Test 2</string>
+				</regexCodeList>
+				<regexCodePropertyList>
+					<integer>3</integer>
+				</regexCodePropertyList>
+			</Trigger>
+		</TriggerGroup>
+	</TriggerPackage>
+	<TimerPackage>
+		<TimerGroup isActive="yes" isFolder="yes" isTempTimer="no" isOffsetTimer="no">
+			<name>Module Subfolder 1</name>
+			<script></script>
+			<command></command>
+			<packageName></packageName>
+			<time>00:00:00.000</time>
+			<Timer isActive="no" isFolder="no" isTempTimer="no" isOffsetTimer="no">
+				<name>Module Timer 1</name>
+				<script>echo("Module Timer Test\n")</script>
+				<command></command>
+				<packageName></packageName>
+				<time>00:05:00.000</time>
+			</Timer>
+		</TimerGroup>
+	</TimerPackage>
+	<AliasPackage>
+		<AliasGroup isActive="yes" isFolder="yes">
+			<name>Module Subfolder 1</name>
+			<script></script>
+			<command></command>
+			<packageName></packageName>
+			<regex></regex>
+			<AliasGroup isActive="yes" isFolder="yes">
+				<name>Module Sub Sub folder 1 - 1</name>
+				<script></script>
+				<command></command>
+				<packageName></packageName>
+				<regex></regex>
+				<Alias isActive="yes" isFolder="no">
+					<name>Moldule Alias 1</name>
+					<script>feedTriggers("Module Test\n")</script>
+					<command></command>
+					<packageName></packageName>
+					<regex>^ModuleAlias$</regex>
+				</Alias>
+			</AliasGroup>
+		</AliasGroup>
+	</AliasPackage>
+	<ActionPackage />
+	<ScriptPackage>
+		<ScriptGroup isActive="yes" isFolder="yes">
+			<name>TFE_XP_Display</name>
+			<packageName>TFE_XP_Display</packageName>
+			<script></script>
+			<eventHandlerList />
+			<ScriptGroup isActive="yes" isFolder="yes">
+				<name>XP Display</name>
+				<packageName></packageName>
+				<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+tfe = tfe or {}
+tfe.xp = tfe.xp or {}</script>
+				<eventHandlerList />
+				<Script isActive="yes" isFolder="no">
+					<name>tfe.xp.counter</name>
+					<packageName></packageName>
+					<script>-------------------------------------------------
+--         Put your Lua functions here.        --
+--                                             --
+-- Note that you can also use external scripts --
+-------------------------------------------------
+
+tfe.xp.display = tfe.xp.display or Adjustable.Container:new({name="XPDisplayContainer"})
+tfe.xp.labels = tfe.xp.labels or {}
+tfe.xp.labels.gained = tfe.xp.labels.gained or Geyser.Label:new({x=0, y=0, height=20, width=150},tfe.xp.display)
+tfe.xp.labels.kills = tfe.xp.labels.kills or Geyser.Label:new({x=0, y=20, height=20, width=150},tfe.xp.display)
+tfe.xp.labels.killsaverage = tfe.xp.labels.killsaverage or Geyser.Label:new({x=0, y=40, height=20, width=150},tfe.xp.display)
+tfe.xp.labels.killstogo = tfe.xp.labels.killstogo or Geyser.Label:new({x=0, y=60, height=20, width=150},tfe.xp.display)
+tfe.xp.labels.timeaverage = tfe.xp.labels.timeaverage or Geyser.Label:new({x=0, y=80, height=20, width=150},tfe.xp.display)
+tfe.xp.labels.timetogo = tfe.xp.labels.timetogo or Geyser.Label:new({x=0, y=100, height=20, width=150},tfe.xp.display)
+tfe.xp.labels.reset = tfe.xp.labels.reset or Geyser.Label:new({x=200, y=0, height=120, width=20},tfe.xp.display)
+tfe.xp.labels.reset:echo("[R] [E] [S] [E] [T]")
+tfe.xp.labels.reset:setStyleSheet([[qproperty-wordWrap: true]])
+tfe.xp.display:show()
+
+
+function tfe.xp.counter(_,xp)
+  local needed = 0
+  tfe.xp.mobcount = tfe.xp.mobcount or 0
+  tfe.xp.gained = tfe.xp.gained or 0
+  tfe.xp.starttime = tfe.xp.starttime or os.time()
+  
+  if gmcp and gmcp.Char and gmcp.Char.Score then needed = gmcp.Char.Score.xp_needed or 0 end
+  
+  if xp &gt; 0 then tfe.xp.mobcount = tfe.xp.mobcount + 1 end
+  tfe.xp.gained = tfe.xp.gained + tonumber(xp)
+  tfe.xp.killsaverage = math.floor(tfe.xp.gained/tfe.xp.mobcount)
+  tfe.xp.killstogo = math.floor(needed/tfe.xp.killsaverage)+1
+  tfe.xp.timeaverage = math.floor(tfe.xp.gained/((os.time()-tfe.xp.starttime)/60))
+  tfe.xp.timetogo = math.floor(needed/tfe.xp.timeaverage)+1
+  
+  tfe.xp.labels.gained:echo("XP: "..tostring(tfe.xp.gained))
+  tfe.xp.labels.kills:echo("Kills: "..tostring(tfe.xp.mobcount))
+  tfe.xp.labels.killsaverage:echo("Per Kill: "..tostring(tfe.xp.killsaverage))
+  tfe.xp.labels.killstogo:echo("Kills Needed: "..tostring(tfe.xp.killstogo))
+  tfe.xp.labels.timeaverage:echo("Per Minute: "..tostring(tfe.xp.timeaverage))
+  tfe.xp.labels.timetogo:echo("Minutes To Go: "..tostring(tfe.xp.timetogo))
+end
+
+function tfe.xp.refresh()
+  tfe.xp.counter(nil,0)
+end
+
+function tfe.xp.reset()
+  tfe.xp.mobcount = 0
+  tfe.xp.gained = 0
+  tfe.xp.starttime = os.time()
+  tfe.xp.labels.gained:echo("XP: 0")
+  tfe.xp.labels.kills:echo("Kills: 0")
+  tfe.xp.labels.killsaverage:echo("Per Kill: 0")
+  tfe.xp.labels.killstogo:echo("Kills Needed: 0")
+  tfe.xp.labels.timeaverage:echo("Per Minute: 0")
+  tfe.xp.labels.timetogo:echo("Minutes To Go: 0")
+end
+
+tfe.xp.labels.reset:setClickCallback(tfe.xp.reset)
+
+--call lua tfe.xp.resize(400,20)
+
+function tfe.xp.resize(w, h)
+  tfe.xp.labels.gained:resize(w,h)
+  tfe.xp.labels.kills:resize(w,h)
+  tfe.xp.labels.killsaverage:resize(w,h)
+  tfe.xp.labels.killstogo:resize(w,h)
+  tfe.xp.labels.timeaverage:resize(w,h)
+  tfe.xp.labels.timetogo:resize(w,h)
+  tfe.xp.labels.reset:move(-20,0)
+end</script>
+					<eventHandlerList>
+						<string>Gained_XP</string>
+					</eventHandlerList>
+				</Script>
+			</ScriptGroup>
+		</ScriptGroup>
+	</ScriptPackage>
+	<KeyPackage>
+		<KeyGroup isActive="no" isFolder="yes">
+			<name>key group 1</name>
+			<packageName></packageName>
+			<script></script>
+			<command></command>
+			<keyCode>-1</keyCode>
+			<keyModifier>0</keyModifier>
+			<Key isActive="no" isFolder="no">
+				<name>template key 1</name>
+				<packageName></packageName>
+				<script>echo("success!")</script>
+				<command></command>
+				<keyCode>-1</keyCode>
+				<keyModifier>0</keyModifier>
+			</Key>
+		</KeyGroup>
+	</KeyPackage>
+	<HelpPackage>
+		<helpURL></helpURL>
+	</HelpPackage>
+</MudletPackage>
