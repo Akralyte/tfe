@@ -1,3 +1,4 @@
+<!-test comment for commit>
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE MudletPackage>
 <MudletPackage version="1.002">
@@ -238,7 +239,7 @@ end</script>
 			<script>-------------------------------------------------
 --         Put your Lua functions here.        --
 --                                             --
--- Note that you can also use external scripts --
+-- Note that you can also use external scripts 
 -------------------------------------------------
 tfe = tfe or {}
 tfe.ui = tfe.ui or {}
