@@ -160,8 +160,8 @@ mmp.tfe.RemoveOpenCommand(room, dir)
   --TFE uses vnum instead of num for room number and terrain instead of environment
   if not mmp then return end
   if mmp.game == "The Forest's Edge" then
-    gmcp.Room.Info.num = gmcp.Room.Info.vnum
-    gmcp.Room.Info.environment = gmcp.Room.Info.terrain
+    gmcp.Room.Info.num = gmcp.Room.Info.num
+    gmcp.Room.Info.environment = gmcp.Room.Info.environment
   end
 end</script>
 				<eventHandlerList>
@@ -224,7 +224,7 @@ end</script>
 				<script>function mmp_tfe_center_roominfo()
   -- tfe uses vnum instead of num. this is executing before i can get the alternatives
   if mmp.game ~= "The Forest's Edge" then return end
-  if gmcp.Room.Info then centerview(gmcp.Room.Info.vnum) end
+  if gmcp.Room.Info then centerview(gmcp.Room.Info.num) end
 end</script>
 				<eventHandlerList>
 					<string>gmcp.Room</string>
